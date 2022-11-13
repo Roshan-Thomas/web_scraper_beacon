@@ -43,7 +43,21 @@ result_virgin_json = json.dumps(result_virgin)
 with open("virgin_tickets_dump.json", "w") as outfile:
     outfile.write(result_virgin_json)
 
-result_tikbox = scraper.build(url_tixbox, categories_tikbox)
+
+# Scrapping for Tikbox 
+
+build_tikbox = scraper.build(url_tixbox, categories_tikbox)
+grouped_tikbox = scraper.get_result_similar(url_tixbox, grouped=True)
+tikbox_duplicates_removed_list = pop_duplicate_keys(grouped_tikbox, approved_keys=[0, 4, 5])
+
+scraper.set_rule_aliases({f'{tikbox_duplicates_removed_list[0]}': 'concertName', f'{tikbox_duplicates_removed_list[1]}': 'date', f'{tikbox_duplicates_removed_list[2]}': 'locations'})
+scraper.keep_rules(tikbox_duplicates_removed_list)
+result_tikbox = scraper.get_result_similar(url_tixbox, group_by_alias=True)
+result_tikbox_json = json.dumps(result_tikbox)
+
+# Write to JSON file - Tikbox
+with open("tikbox_dump.json", "w") as outfile:
+    outfile.write(result_tikbox_json)
 
 
 
