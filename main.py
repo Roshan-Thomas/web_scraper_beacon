@@ -1,8 +1,9 @@
 from autoscraper import AutoScraper
+import json
 
 
 def pop_duplicate_keys(grouped_list, approved_keys):
-    count = 1
+    count = 0
     for key in list(grouped_list.keys()):
         if (count < len(grouped_list)):
             if (count not in approved_keys):
@@ -26,23 +27,25 @@ scraper = AutoScraper()
 
 result_mdlbeast = scraper.build(url_mdlbeast, categories_mdlbeast)
 
-result_virgin = scraper.build(url_virgin, categories_virgin)
-grouped_virgin = scraper.get_result_similar(url_virgin, grouped=True)
-virgin_duplicates_removed_list = pop_duplicate_keys(grouped_virgin, approved_keys=[1, 5, 8])
+# Scrapping for Virgin Tickets
 
-scraper.set_rule_aliases({f'{virgin_duplicates_removed_list[0]}': 'concertName', f'{virgin_duplicates_removed_list[1]}': 'locations', f'{virgin_duplicates_removed_list[2]}': 'date'})
+build_virgin = scraper.build(url_virgin, categories_virgin)
+grouped_virgin = scraper.get_result_similar(url_virgin, grouped=True)
+virgin_duplicates_removed_list = pop_duplicate_keys(grouped_virgin, approved_keys=[0, 5, 8])
+
+scraper.set_rule_aliases({f'{virgin_duplicates_removed_list[0]}': 'concertName', f'{virgin_duplicates_removed_list[1]}': 'locations', f'{virgin_duplicates_removed_list[3]}': 'date'})
 scraper.keep_rules(virgin_duplicates_removed_list)
 grouped_virgin = scraper.get_result_similar(url_virgin, grouped=True)
-print(grouped_virgin)
+result_virgin = scraper.get_result_similar(url_virgin, group_by_alias=True)
+result_virgin_json = json.dumps(result_virgin)
 
-# final = []
-# result_virgin = [final.append(virgin_duplicates_removed_list[i]) for i in range(len(virgin_duplicates_removed_list))]
-
-# print(final)
+# Write to JSON file - Virgin Tickets
+with open("virgin_tickets_dump.json", "w") as outfile:
+    outfile.write(result_virgin_json)
 
 result_tikbox = scraper.build(url_tixbox, categories_tikbox)
 
-# print(type(result_mdlbeast))
+
 
 
 
